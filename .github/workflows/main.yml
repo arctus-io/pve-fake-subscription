@@ -14,5 +14,4 @@ jobs:
     steps:
       - uses: actions/checkout@4.2.2
       - name: build
-        run: |
-          ./package.sh
+        run: ./package.sh
