@@ -9,7 +9,8 @@ on:
 
 jobs:
   build:
-    runs-on: goreleaser/nfpm
+    runs-on: ubuntu-latest
+    container: goreleaser/nfpm
     steps:
       - uses: actions/checkout@4.2.2
       - name: build
