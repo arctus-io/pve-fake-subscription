@@ -74,19 +74,12 @@ jobs:
       - name: Stage gh-pages
         run: |
           cd gh-pages
-          git branch -f gh-pages HEAD
-          echo branch
-          git checkout gh-pages
-          echo checkout
           git config user.name "Github Pages Overwriter"
           git config user.email "GithubPagesOverwriter@users.noreply.github.com"
           git commit --amend -m "This commit will be automatically published"
-          echo commit
           date > ./publish_date.txt
           git add --force .
-          echo add
           git commit -m "Automated publish"
-          echo commit2
 
       - name: Push the build output to github pages
         shell: bash
