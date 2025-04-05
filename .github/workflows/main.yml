@@ -56,10 +56,10 @@ jobs:
         run: |
           mkdir -p gh-pages/apt-repo/dists/stable/main/binary-all
           mkdir -p gh-pages/apt-repo/pool/main
-          cd gh-pages/apt-repo
-          apt-ftparchive packages --arch all pool/ > dists/stable/main/binary-all/Packages
-          [ ! -f dists/stable/Release ] || rm -f dists/stable/Release
-          apt-ftparchive release dists/stable/ \
+          cd gh-pages
+          apt-ftparchive packages --arch all pool/ > apt-repo/dists/stable/main/binary-all/Packages
+          [ ! -f apt-repo/dists/stable/Release ] || rm -f apt-repo/dists/stable/Release
+          apt-ftparchive release apt-repo/dists/stable/ \
           -o APT::FTPArchive::Release::Origin="pre-fake-subscription Github" \
           -o APT::FTPArchive::Release::Label="pve-fake-subscription" \
           -o APT::FTPArchive::Release::Suite="stable" \
@@ -69,28 +69,12 @@ jobs:
           -o APT::FTPArchive::Release::Components="main" \
           -o APT::FTPArchive::Release::Description="Repository for pve-fake-subscription, which disables the \"No valid subscription\" dialog on all Proxmox products." \
           > Release
-          mv Release dists/stable/Release
-          
+          mv Release apt-repo/dists/stable/Release
+          [ ! -d ".git" ] && git init && echo "Initialized gh-pages" || echo "gh-pages already initialized"          
 
       - name: Publish current workdir (which contains generated content) to GitHub Pages
         uses: rayluo/github-pages-overwriter@v1.3
 
         with:
-
-          # Optional.
-          #
-          # Default value "." means the root directory of your project will be published.
-          #
-          # You can use whatever directory your project uses,
-          # for example "wwwroot" (without leading "./").
-          # Such a directory does *not* have to already exist in your repo,
-          # it could be an output directory created dynamically
-          # by your static website builder.
           source-directory: gh-pages
-
-          # Optional. Default value "gh-pages".
-          # It specifies the temporary branch which hosts the static website.
-          # Each build will REMOVE this branch and replace it with new content.
-          # (If you want to keep your old "gh-pages" branch,
-          # you should define a different target branch for this GPO action to work with.)
           target-branch: gh-pages
