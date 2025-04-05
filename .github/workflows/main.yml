@@ -70,11 +70,11 @@ jobs:
           -o APT::FTPArchive::Release::Description="Repository for pve-fake-subscription, which disables the \"No valid subscription\" dialog on all Proxmox products." \
           > Release
           mv Release apt-repo/dists/stable/Release
+          cd ..
           [ ! -d ".git" ] && git init && echo "Initialized gh-pages" || echo "gh-pages already initialized"          
 
       - name: Publish current workdir (which contains generated content) to GitHub Pages
         uses: rayluo/github-pages-overwriter@v1.3
-
         with:
           source-directory: gh-pages
           target-branch: gh-pages
