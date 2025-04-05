@@ -11,6 +11,6 @@ mkdir -p "${OUT_DIR}"
 nfpm pkg --packager deb --target "${OUT_DIR}"
 
 # generate checksum
-pushd "${OUT_DIR}" >/dev/null
+cd "${OUT_DIR}"
 sha256sum -b -- * > sha256sum.txt
-popd >/dev/null
+cd ../
