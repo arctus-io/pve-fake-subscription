@@ -12,6 +12,16 @@ jobs:
     runs-on: ubuntu-latest
     container: goreleaser/nfpm
     steps:
-      - uses: actions/checkout@4.2.2
-      - name: build
+      - name: Checkout
+        uses: actions/checkout@4.2.2
+
+      - name: Build
         run: sh ./package.sh
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: workspace_artifacts
+          path: ${{ github.workspace }}
+
+          
