@@ -8,23 +8,89 @@ on:
       - master
 
 jobs:
-  build:
+  build-deb:
     runs-on: ubuntu-latest
     container: goreleaser/nfpm
+    outputs:
+        deb_md5: ${{ steps.build.outputs.deb_md5 }}
+        deb_sha1: ${{ steps.build.outputs.deb_sha1 }}
+        deb_sha256: ${{ steps.build.outputs.deb_sha256 }}
     steps:
-      - name: Checkout
+      - name: Checkout source
         uses: actions/checkout@4.2.2
 
       - name: Build
+        id: build
         run: |
           mkdir out
           nfpm pkg --packager deb --target ./out
-          sha256sum -b -- ./out/*.deb > ./out/sha256sum.txt
-
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: workspace_artifacts
-          path: ${{ github.workspace }}/out
-
+          echo "deb_md5=`md5sum ./out/*.deb | awk -F' ' '{printf($1)}'`" >> $GITHUB_OUTPUT
+          echo "deb_sha1=`sha1sum ./out/*.deb | awk -F' ' '{printf($1)}'`" >> $GITHUB_OUTPUT
+          echo "deb_sha256=`sha256sum ./out/*.deb | awk -F' ' '{printf($1)}'`" >> $GITHUB_OUTPUT
           
+      - name: Cache Build Artifacts
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/out
+          key: ${{ vars.deb_md5 }}-${{ vars.deb_sha1 }}-${{ vars.deb_sha256 }}
+
+  build-repo-and-publish:
+    needs: build-deb
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          path: 'gh-pages'
+          ref: 'gh-pages'
+
+      - name: Fetch deb from build
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ github.workspace }}/build
+          key: ${{ needs.build-deb.outputs.deb_md5 }}-${{ needs.build-deb.outputs.deb_sha1 }}-${{ needs.build-deb.outputs.deb_sha256 }}
+
+      - name: Build apt repo
+        run: |
+          mkdir -p gh-pages/apt-repo/dists/stable/main/binary-all
+          mkdir -p gh-pages/apt-repo/pool/main
+          cd gh-pages/apt-repo
+          apt-ftparchive packages --arch all pool/ > dists/stable/main/binary-all/Packages
+          [ ! -f dists/stable/Release ] || rm -f dists/stable/Release
+          apt-ftparchive release dists/stable/ \
+          -o APT::FTPArchive::Release::Origin="pre-fake-subscription Github" \
+          -o APT::FTPArchive::Release::Label="pve-fake-subscription" \
+          -o APT::FTPArchive::Release::Suite="stable" \
+          -o APT::FTPArchive::Release::Version="1.0"  \
+          -o APT::FTPArchive::Release::Codename="stable" \
+          -o APT::FTPArchive::Release::Architectures="all" \
+          -o APT::FTPArchive::Release::Components="main" \
+          -o APT::FTPArchive::Release::Description="Repository for pve-fake-subscription, which disables the \"No valid subscription\" dialog on all Proxmox products." \
+          > Release
+          mv Release dists/stable/Release
+          
+
+      - name: Publish current workdir (which contains generated content) to GitHub Pages
+        uses: rayluo/github-pages-overwriter@v1.3
+
+        with:
+
+          # Optional.
+          #
+          # Default value "." means the root directory of your project will be published.
+          #
+          # You can use whatever directory your project uses,
+          # for example "wwwroot" (without leading "./").
+          # Such a directory does *not* have to already exist in your repo,
+          # it could be an output directory created dynamically
+          # by your static website builder.
+          source-directory: gh-pages
+
+          # Optional. Default value "gh-pages".
+          # It specifies the temporary branch which hosts the static website.
+          # Each build will REMOVE this branch and replace it with new content.
+          # (If you want to keep your old "gh-pages" branch,
+          # you should define a different target branch for this GPO action to work with.)
+          target-branch: gh-pages
