@@ -1,0 +1,15 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: goreleaser/nfpm
+    steps:
+      - uses: actions/checkout@4.2.2
+      - name: build
+        run: |
+          ./package.sh
