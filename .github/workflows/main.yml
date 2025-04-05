@@ -18,7 +18,7 @@ jobs:
       - name: Build
         run: |
           mkdir out
-          nfpm pkg --packager deb --targer ./out
+          nfpm pkg --packager deb --target ./out
           sha256sum -b -- * > ./out/sha256sum.txt
 
       - name: Upload Build Artifacts
