@@ -16,12 +16,15 @@ jobs:
         uses: actions/checkout@4.2.2
 
       - name: Build
-        run: sh ./package.sh
+        run: |
+          mkdir out
+          nfpm pkg --packager deb --targer ./out
+          sha256sum -b -- * > ./out/sha256sum.txt
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: workspace_artifacts
-          path: ${{ github.workspace }}
+          path: ${{ github.workspace }}/out
 
           
