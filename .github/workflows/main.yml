@@ -19,7 +19,7 @@ jobs:
         run: |
           mkdir out
           nfpm pkg --packager deb --target ./out
-          sha256sum -b -- * > ./out/sha256sum.txt
+          sha256sum -b -- ./out/.deb > ./out/sha256sum.txt
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
