@@ -78,7 +78,7 @@ jobs:
           -o APT::FTPArchive::Release::Components="main" \
           -o APT::FTPArchive::Release::Description="Repository for pve-fake-subscription, which disables the \"No valid subscription\" dialog on all Proxmox products." \
           > Release
-          mv Release apt-repo/dists/stable/Release      
+          mv Release dists/stable/Release      
 
       - name: Publish gh-pages
         run: |
