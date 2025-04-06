@@ -34,7 +34,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/out
-          key: ${{ steps.build.outputs.deb_md5 }}-${{ steps.build.outputs.deb_sha1 }}-${{ steps.build.outputs.deb_sha256 }}
+          key: ${{ steps.build.outputs.deb_md5 }}-deb
 
   build-repo-and-publish:
     needs: build-deb
@@ -55,7 +55,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ github.workspace }}/build
-          key: ${{ needs.build-deb.outputs.deb_md5 }}-${{ needs.build-deb.outputs.deb_sha1 }}-${{ needs.build-deb.outputs.deb_sha256 }}
+          key: ${{ needs.build-deb.outputs.deb_md5 }}-deb
 
       - name: Build apt repo
         run: |
