@@ -1,0 +1,89 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-deb:
+    runs-on: ubuntu-latest
+    outputs:
+        deb_md5: ${{ steps.build.outputs.deb_md5 }}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@4.2.2
+
+      - name: Build
+        id: build
+        run: |
+          echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
+          sudo apt-get update -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/goreleaser.list -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
+          echo "set man-db/auto-update false" | sudo debconf-communicate
+          sudo dpkg-reconfigure man-db
+          sudo rm -f /var/lib/man-db/auto-update
+          sudo apt install nfpm
+          mkdir out
+          nfpm pkg --packager deb --target ./out
+          echo "deb_md5=`md5sum ./out/*.deb | awk -F' ' '{printf($1)}'`" >> $GITHUB_OUTPUT
+          
+      - name: Cache Build Artifacts
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/out
+          key: ${{ steps.build.outputs.deb_md5 }}
+
+  build-repo-and-publish:
+    needs: build-deb
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          path: 'gh-pages'
+          ref: 'gh-pages'
+
+      - name: Make out dir
+        run: mkdir -p out
+
+      - name: Fetch deb from build
+        uses: actions/cache@v4
+        with:
+          path: ${{ github.workspace }}/out
+          key: ${{ needs.build-deb.outputs.deb_md5 }}
+
+      - name: Build apt repo
+        run: |
+          mkdir -p gh-pages/apt-repo/dists/bookworm/main/binary-all
+          mkdir -p gh-pages/apt-repo/pool/main
+          mv out/*.deb gh-pages/apt-repo/pool/
+          cd gh-pages/apt-repo/dists
+          [ -L stable ] || ln -s bookworm stable
+          cd ${{ github.workspace }}/gh-pages/apt-repo
+          apt-ftparchive packages --arch all pool/ > dists/bookworm/main/binary-all/Packages
+          [ ! -f dists/bookworm/Release ] || rm -f dists/bookworm/Release
+          apt-ftparchive release dists/bookworm/ \
+          -o APT::FTPArchive::Release::Origin="pre-fake-subscription Github" \
+          -o APT::FTPArchive::Release::Label="pve-fake-subscription" \
+          -o APT::FTPArchive::Release::Suite="bookworm" \
+          -o APT::FTPArchive::Release::Version="1.0"  \
+          -o APT::FTPArchive::Release::Codename="stable" \
+          -o APT::FTPArchive::Release::Architectures="all" \
+          -o APT::FTPArchive::Release::Components="main" \
+          -o APT::FTPArchive::Release::Description="Repository for pve-fake-subscription, which disables the \"No valid subscription\" dialog on all Proxmox products." \
+          > Release
+          mv Release dists/bookworm/Release      
+
+      - name: Publish gh-pages
+        run: |
+          cd gh-pages
+          git config user.name "Github Pages"
+          git config user.email "GithubPages@users.noreply.github.com"
+          git commit --amend -m "This commit will be automatically published" --allow-empty
+          git add --force .
+          git commit -m "Automated publish"
+          git push -f origin HEAD:refs/heads/gh-pages
