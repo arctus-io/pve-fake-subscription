@@ -108,7 +108,7 @@ jobs:
           git config user.name "Github Pages"
           git config user.email "GithubPages@users.noreply.github.com"
           rm -rf .git
-          git init --branch gh-pages
+          git init --initial-branch gh-pages
           git add --force .
           git commit -m "Automated publish"
           git remote add origin $GITHUB_SERVER_URL/$GITHUB_REPOSITORY
