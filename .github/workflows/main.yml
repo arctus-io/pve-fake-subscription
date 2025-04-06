@@ -105,11 +105,12 @@ jobs:
       - name: Publish gh-pages
         run: |
           cd gh-pages
-          rm -rf .git
+          mv .git/config ./
+          rm -rf .git/*
+          mv config ./git/
           git init --initial-branch gh-pages
           git config user.name "Github Pages"
           git config user.email "GithubPages@users.noreply.github.com"
           git add --force .
           git commit -m "Automated publish"
-          git remote add origin $GITHUB_SERVER_URL/$GITHUB_REPOSITORY
           git push -f origin HEAD:refs/heads/gh-pages
