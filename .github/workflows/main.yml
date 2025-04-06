@@ -80,7 +80,7 @@ jobs:
           > Release
           mv Release apt-repo/dists/stable/Release      
 
-      - name: Stage gh-pages
+      - name: Publish gh-pages
         run: |
           cd gh-pages
           git config user.name "Github Pages Overwriter"
@@ -88,18 +88,4 @@ jobs:
           date > ./publish_date.txt
           git add --force .
           git commit -m "Automated publish"
-
-      - name: Push the build output to github pages
-        shell: bash
-        ##if: ${{ inputs.source-directory == '.' }}
-        # Astonishedly, the "if" command does not work in an action shipped to marketplace,
-        # so that there is even a 3rd-party github action to do that
-        # (https://github.com/marketplace/actions/conditional-value-for-github-action)
-        # But that seems like an overkill. So, we'd use "if" in bash instead.
-        run: >  # https://yaml-multiline.info/
-          if [ "." == "." ]; then
-            git push -f origin HEAD:refs/heads/${{ inputs.target-branch }}
-          else
-            # Inspired from https://gist.github.com/cobyism/4730490#gistcomment-1374989
-            git push -f origin `git subtree split -P .`:refs/heads/gh-pages
-          fi
+          git push -f origin HEAD:refs/heads/gh-pages
