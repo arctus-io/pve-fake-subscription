@@ -102,17 +102,6 @@ jobs:
           > Release
           mv Release dists/bookworm/Release      
 
-      - uses: octokit/request-action@v2.x
-        id: add_pr_comment
-        with:
-          route: POST /repos/:repository/pages
-          repository: ${{ github.repository }}
-          source: |
-            branch: "gh-pages"
-            path: "/"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Publish gh-pages
         run: |
           cd gh-pages
