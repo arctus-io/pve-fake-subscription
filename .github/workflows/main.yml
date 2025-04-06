@@ -107,7 +107,7 @@ jobs:
           cd gh-pages
           mv .git/config ./
           rm -rf .git/*
-          mv config ./git/
+          mv config .git/
           git init --initial-branch gh-pages
           git config user.name "Github Pages"
           git config user.email "GithubPages@users.noreply.github.com"
