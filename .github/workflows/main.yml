@@ -46,6 +46,9 @@ jobs:
           path: 'gh-pages'
           ref: 'gh-pages'
 
+      - name: Make build dir
+        run: mkdir -p build
+
       - name: Fetch deb from build
         uses: actions/cache/save@v4
         with:
@@ -56,6 +59,7 @@ jobs:
         run: |
           mkdir -p gh-pages/apt-repo/dists/stable/main/binary-all
           mkdir -p gh-pages/apt-repo/pool/main
+          mv build/*.deb gh-pages/apt-repo/pool/
           cd gh-pages
           apt-ftparchive packages --arch all apt-repo/pool/ > apt-repo/dists/stable/main/binary-all/Packages
           [ ! -f apt-repo/dists/stable/Release ] || rm -f apt-repo/dists/stable/Release
