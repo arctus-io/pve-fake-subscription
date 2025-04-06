@@ -22,8 +22,9 @@ jobs:
         id: build
         run: |
           echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
-          sudo apt-get update -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/goreleaser.list
-          sudo debconf-set man-db/auto-update false
+          sudo apt-get update -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/goreleaser.list -o Dir::Etc::sourceparts="-" -o APT::Get::List-Cleanup="0"
+          echo "set man-db/auto-update false" | sudo debconf-communicate
+          sudo dpkg-reconfigure man-db
           sudo rm /var/lib/man-db/auto-update
           sudo apt install nfpm
           mkdir out
