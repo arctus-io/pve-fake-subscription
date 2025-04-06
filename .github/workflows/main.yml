@@ -22,7 +22,9 @@ jobs:
         id: build
         run: |
           echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
-          sudo apt update
+          sudo apt-get update -o Dir::Etc::sourcelist=/etc/apt/sources.list.d/goreleaser.list
+          sudo debconf-set man-db/auto-update false
+          sudo rm /var/lib/man-db/auto-update
           sudo apt install nfpm
           mkdir out
           nfpm pkg --packager deb --target ./out
@@ -34,7 +36,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/out
-          key: ${{ steps.build.outputs.deb_md5 }}-deb
+          key: ${{ steps.build.outputs.deb_md5 }}-out
 
   build-repo-and-publish:
     needs: build-deb
@@ -48,20 +50,20 @@ jobs:
           path: 'gh-pages'
           ref: 'gh-pages'
 
-      - name: Make build dir
-        run: mkdir -p build
+      - name: Make out dir
+        run: mkdir -p out
 
       - name: Fetch deb from build
-        uses: actions/cache/restore@v4
+        uses: actions/cache@v4
         with:
-          path: ${{ github.workspace }}/build
-          key: ${{ needs.build-deb.outputs.deb_md5 }}-deb
+          path: ${{ github.workspace }}/out
+          key: ${{ needs.build-deb.outputs.deb_md5 }}-out
 
       - name: Build apt repo
         run: |
           mkdir -p gh-pages/apt-repo/dists/stable/main/binary-all
           mkdir -p gh-pages/apt-repo/pool/main
-          mv build/*.deb gh-pages/apt-repo/pool/
+          mv out/*.deb gh-pages/apt-repo/pool/
           cd gh-pages
           apt-ftparchive packages --arch all apt-repo/pool/ > apt-repo/dists/stable/main/binary-all/Packages
           [ ! -f apt-repo/dists/stable/Release ] || rm -f apt-repo/dists/stable/Release
