@@ -34,7 +34,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/out
-          key: ${{ vars.deb_md5 }}-${{ vars.deb_sha1 }}-${{ vars.deb_sha256 }}
+          key: ${{ steps.build.outputs.deb_md5 }}-${{ steps.build.outputs.deb_sha1 }}-${{ steps.build.outputs.deb_sha256 }}
 
   build-repo-and-publish:
     needs: build-deb
