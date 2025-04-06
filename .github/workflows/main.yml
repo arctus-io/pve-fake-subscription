@@ -58,25 +58,25 @@ jobs:
 
       - name: Build apt repo
         run: |
-          mkdir -p gh-pages/apt-repo/dists/stable/main/binary-all
+          mkdir -p gh-pages/apt-repo/dists/bookworm/main/binary-all
           mkdir -p gh-pages/apt-repo/pool/main
           mv out/*.deb gh-pages/apt-repo/pool/
           cd gh-pages/apt-repo/dists
-          ln -s stable bookworm
+          ln -s bookworm stable
           cd ${{ github.workspace }}/gh-pages/apt-repo
-          apt-ftparchive packages --arch all pool/ > dists/stable/main/binary-all/Packages
-          [ ! -f dists/stable/Release ] || rm -f dists/stable/Release
-          apt-ftparchive release dists/stable/ \
+          apt-ftparchive packages --arch all pool/ > dists/bookworm/main/binary-all/Packages
+          [ ! -f dists/bookworm/Release ] || rm -f dists/bookworm/Release
+          apt-ftparchive release dists/bookworm/ \
           -o APT::FTPArchive::Release::Origin="pre-fake-subscription Github" \
           -o APT::FTPArchive::Release::Label="pve-fake-subscription" \
-          -o APT::FTPArchive::Release::Suite="stable" \
+          -o APT::FTPArchive::Release::Suite="bookworm" \
           -o APT::FTPArchive::Release::Version="1.0"  \
           -o APT::FTPArchive::Release::Codename="stable" \
           -o APT::FTPArchive::Release::Architectures="all" \
           -o APT::FTPArchive::Release::Components="main" \
           -o APT::FTPArchive::Release::Description="Repository for pve-fake-subscription, which disables the \"No valid subscription\" dialog on all Proxmox products." \
           > Release
-          mv Release dists/stable/Release      
+          mv Release dists/bookworm/Release      
 
       - name: Publish gh-pages
         run: |
