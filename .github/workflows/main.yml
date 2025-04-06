@@ -85,7 +85,6 @@ jobs:
           cd gh-pages
           git config user.name "Github Pages Overwriter"
           git config user.email "GithubPagesOverwriter@users.noreply.github.com"
-          git commit --amend -m "This commit will be automatically published"
           date > ./publish_date.txt
           git add --force .
           git commit -m "Automated publish"
