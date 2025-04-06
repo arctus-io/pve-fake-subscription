@@ -52,7 +52,7 @@ jobs:
         run: mkdir -p build
 
       - name: Fetch deb from build
-        uses: actions/cache/save@v4
+        uses: actions/cache/restore@v4
         with:
           path: ${{ github.workspace }}/build
           key: ${{ needs.build-deb.outputs.deb_md5 }}-${{ needs.build-deb.outputs.deb_sha1 }}-${{ needs.build-deb.outputs.deb_sha256 }}
