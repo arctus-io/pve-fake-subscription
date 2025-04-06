@@ -37,7 +37,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/out
-          key: ${{ steps.build.outputs.deb_md5 }}-out
+          key: ${{ steps.build.outputs.deb_md5 }}
 
   build-repo-and-publish:
     needs: build-deb
@@ -58,17 +58,17 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/out
-          key: ${{ needs.build-deb.outputs.deb_md5 }}-out
+          key: ${{ needs.build-deb.outputs.deb_md5 }}
 
       - name: Build apt repo
         run: |
           mkdir -p gh-pages/apt-repo/dists/stable/main/binary-all
           mkdir -p gh-pages/apt-repo/pool/main
           mv out/*.deb gh-pages/apt-repo/pool/
-          cd gh-pages
-          apt-ftparchive packages --arch all apt-repo/pool/ > apt-repo/dists/stable/main/binary-all/Packages
-          [ ! -f apt-repo/dists/stable/Release ] || rm -f apt-repo/dists/stable/Release
-          apt-ftparchive release apt-repo/dists/stable/ \
+          cd gh-pages/apt-repo
+          apt-ftparchive packages --arch all pool/ > dists/stable/main/binary-all/Packages
+          [ ! -f dists/stable/Release ] || rm -f dists/stable/Release
+          apt-ftparchive release dists/stable/ \
           -o APT::FTPArchive::Release::Origin="pre-fake-subscription Github" \
           -o APT::FTPArchive::Release::Label="pve-fake-subscription" \
           -o APT::FTPArchive::Release::Suite="stable" \
