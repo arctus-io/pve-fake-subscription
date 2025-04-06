@@ -52,7 +52,7 @@ jobs:
           fi
     
       - name: Checkout gh-pages
-        if: ${{ steps.check-branch-exists.outputs.exists }}
+        if: ${{ steps.check-branch-exists.outputs.exists == 'true' }}
         id: checkout-gh-pages
         uses: actions/checkout@v4
         with:
@@ -60,13 +60,13 @@ jobs:
           ref: 'gh-pages'
 
       - name: Checkout current branch if gh-pages doesn't exist yet
-        if: ${{ ! steps.check-branch-exists.outputs.exists }}
+        if: ${{ steps.check-branch-exists.outputs.exists == 'false' }}
         uses: actions/checkout@v4
         with:
           path: 'gh-pages'
 
       - name: Create empty gh-pages branch if it doesn't exist yet
-        if: ${{ ! steps.check-branch-exists.outputs.exists }}
+        if: ${{ steps.check-branch-exists.outputs.exists == 'false' }}
         run: |
           cd gh-pages
           git switch --orphan gh-pages
