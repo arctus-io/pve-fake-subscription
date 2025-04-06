@@ -41,7 +41,18 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
+      - name: Check if gh-pages branch exists
+        id: check-branch-exists
+        shell: bash
+        run: |
+          if [[ -n $(git ls-remote --heads origin gh-pages) ]]; then
+              echo "exists=true" >> $GITHUB_OUTPUT
+          else
+              echo "exists=false" >> $GITHUB_OUTPUT          
+          fi
+    
       - name: Checkout gh-pages
+        if: ${{ steps.check-branch-exists.outputs.exists }}
         id: checkout-gh-pages
         uses: actions/checkout@v4
         with:
@@ -49,14 +60,13 @@ jobs:
           ref: 'gh-pages'
 
       - name: Checkout current branch if gh-pages doesn't exist yet
-        id: checkout-current
-        if: ${{ failure() && steps.checkout-gh-pages.conclusion == 'failure' }}
+        if: ${{ ! steps.check-branch-exists.outputs.exists }}
         uses: actions/checkout@v4
         with:
           path: 'gh-pages'
 
       - name: Create empty gh-pages branch if it doesn't exist yet
-        if: ${{ steps.checkout-current.conclusion == 'success' }}
+        if: ${{ ! steps.check-branch-exists.outputs.exists }}
         run: |
           cd gh-pages
           git switch --orphan gh-pages
