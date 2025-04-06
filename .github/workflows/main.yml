@@ -62,7 +62,7 @@ jobs:
           mkdir -p gh-pages/apt-repo/pool/main
           mv out/*.deb gh-pages/apt-repo/pool/
           cd gh-pages/apt-repo/dists
-          ln -s bookworm stable
+          [ -L stable ] || ln -s bookworm stable
           cd ${{ github.workspace }}/gh-pages/apt-repo
           apt-ftparchive packages --arch all pool/ > dists/bookworm/main/binary-all/Packages
           [ ! -f dists/bookworm/Release ] || rm -f dists/bookworm/Release
