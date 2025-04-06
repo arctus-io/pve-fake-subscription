@@ -60,9 +60,10 @@ jobs:
         run: |
           mkdir -p gh-pages/apt-repo/dists/stable/main/binary-all
           mkdir -p gh-pages/apt-repo/pool/main
-          ln -s gh-pages/apt-repo/dists/stable gh-pages/apt-repo/dists/bookworm
           mv out/*.deb gh-pages/apt-repo/pool/
-          cd gh-pages/apt-repo
+          cd gh-pages/apt-repo/dists
+          ln -s stable bookworm
+          cd ${{ github.workspace }}/gh-pages/apt-repo
           apt-ftparchive packages --arch all pool/ > dists/stable/main/binary-all/Packages
           [ ! -f dists/stable/Release ] || rm -f dists/stable/Release
           apt-ftparchive release dists/stable/ \
