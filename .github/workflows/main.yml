@@ -45,7 +45,7 @@ jobs:
         id: check-branch-exists
         shell: bash
         run: |
-          if [[ -n $(git ls-remote --heads origin gh-pages) ]]; then
+          if [[ -n $(git ls-remote --branches $GITHUB_SERVER_URL/$GITHUB_REPOSITORY gh-pages) ]]; then
               echo "exists=true" >> $GITHUB_OUTPUT
           else
               echo "exists=false" >> $GITHUB_OUTPUT          
