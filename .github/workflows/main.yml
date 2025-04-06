@@ -42,11 +42,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout gh-pages
+        id: checkout-gh-pages
         uses: actions/checkout@v4
         with:
           path: 'gh-pages'
           ref: 'gh-pages'
 
+      - name: Checkout current branch if gh-pages doesn't exist yet
+        id: checkout-current
+        if: ${{ failure() && steps.checkout-gh-pages.conclusion == 'failure' }}
+        uses: actions/checkout@v4
+        with:
+          path: 'gh-pages'
+
+      - name: Create empty gh-pages branch if it doesn't exist yet
+        if: ${{ steps.checkout-current.conclusion == 'success' }}
+        run: |
+          cd gh-pages
+          git switch --orphan gh-pages
+        
       - name: Make out dir
         run: mkdir -p out
 
