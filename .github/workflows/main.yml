@@ -108,6 +108,7 @@ jobs:
             mv Release dists/${codename}/Release
           done
 
+          cd ..
           yes | sudo cpan App::htidx
           htidx
           
