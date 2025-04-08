@@ -106,6 +106,9 @@ jobs:
             > Release
             mv Release dists/${codename}/Release
           done
+
+          yes | sudo cpan App::htidx
+          htidx
           
       - name: Publish gh-pages
         run: |
