@@ -82,26 +82,31 @@ jobs:
 
       - name: Build apt repo
         run: |
-          mkdir -p gh-pages/apt-repo/dists/bookworm/main/binary-all
+          mkdir -p gh-pages/apt-repo/dists/{bookworm,trixie}/main/binary-all
           mkdir -p gh-pages/apt-repo/pool/main
           mv out/*.deb gh-pages/apt-repo/pool/
           cd gh-pages/apt-repo/dists
           [ -L stable ] || ln -s bookworm stable
+          [ -L testing ] || ln -s trixie testing
           cd ${{ github.workspace }}/gh-pages/apt-repo
-          apt-ftparchive packages --arch all pool/ > dists/bookworm/main/binary-all/Packages
-          [ ! -f dists/bookworm/Release ] || rm -f dists/bookworm/Release
-          apt-ftparchive release dists/bookworm/ \
-          -o APT::FTPArchive::Release::Origin="Proxmox" \
-          -o APT::FTPArchive::Release::Label="pve-fake-subscription" \
-          -o APT::FTPArchive::Release::Suite="bookworm" \
-          -o APT::FTPArchive::Release::Version="1.0"  \
-          -o APT::FTPArchive::Release::Codename="stable" \
-          -o APT::FTPArchive::Release::Architectures="all" \
-          -o APT::FTPArchive::Release::Components="main" \
-          -o APT::FTPArchive::Release::Description="Repository for pve-fake-subscription, which disables the \"No valid subscription\" dialog on all Proxmox products." \
-          > Release
-          mv Release dists/bookworm/Release      
 
+          for codename in bookworm trixie; do    
+            apt-ftparchive packages --arch all pool/ > dists/${codename}/main/binary-all/Packages
+            cat dists/${codename}/main/binary-all/Packages | gzip -9 > dists/${codename}/main/binary-all/Packages.gz
+            [ ! -f dists/${codename}/Release ] || rm -f dists/${codename}/Release
+            apt-ftparchive release dists/${codename}/ \
+            -o APT::FTPArchive::Release::Origin="Proxmox" \
+            -o APT::FTPArchive::Release::Label="pve-fake-subscription" \
+            -o APT::FTPArchive::Release::Suite="${codename}" \
+            -o APT::FTPArchive::Release::Version="1.0"  \
+            -o APT::FTPArchive::Release::Codename="stable" \
+            -o APT::FTPArchive::Release::Architectures="all" \
+            -o APT::FTPArchive::Release::Components="main" \
+            -o APT::FTPArchive::Release::Description="Repository for pve-fake-subscription, which disables the \"No valid subscription\" dialog on all Proxmox products." \
+            > Release
+            mv Release dists/${codename}/Release
+          done
+          
       - name: Publish gh-pages
         run: |
           cd gh-pages
