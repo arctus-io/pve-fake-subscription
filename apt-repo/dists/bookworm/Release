@@ -1,0 +1,21 @@
+Architectures: all
+Codename: stable
+Components: main
+Date: Tue, 08 Apr 2025 04:46:45 +0000
+Description: Repository for pve-fake-subscription, which disables the "No valid subscription" dialog on all Proxmox products.
+Label: pve-fake-subscription
+Origin: Proxmox
+Suite: bookworm
+Version: 1.0
+MD5Sum:
+ 9738510d34cd009285a959508798d900              832 main/binary-all/Packages
+ 6664df7bc5538fbd0156a970ac2d00f9              573 main/binary-all/Packages.gz
+SHA1:
+ 0efd78e04a3dd476ac3b512cc37d44dad1ac0afd              832 main/binary-all/Packages
+ b733ac2a07692a8b1f57ee85b2096efeaa68eac9              573 main/binary-all/Packages.gz
+SHA256:
+ 83220ede9beca31534ec454778d3f0600b756d86177656e19bf4faa424e5a7db              832 main/binary-all/Packages
+ 9a3f7164a2b233d7801e477c84cb659e1fc473e6fa79f1e4d4a475bd8a5bd561              573 main/binary-all/Packages.gz
+SHA512:
+ f83af794abe72257149985df82d896ec10f7e70377715b56cd54b22ef147dc4fd5292b690bb361a1bef7f1932fd83128487e9744882d46a99eb07b81b0054297              832 main/binary-all/Packages
+ 15ca707678e83bf26c8e1293d7e2d3aa681729c6d252096aeb5edeb539b0791cb07483769c383ec3f0da51e860c08b3d4802071ddce74fd935af5b8bf1c8c351              573 main/binary-all/Packages.gz

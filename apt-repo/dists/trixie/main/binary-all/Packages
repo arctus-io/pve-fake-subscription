@@ -1,0 +1,18 @@
+Package: pve-fake-subscription
+Architecture: all
+Version: 0:0.0.12-1
+Priority: optional
+Section: admin
+Maintainer: Nobody <nobody@example.com>
+Installed-Size: 5
+Depends: python3
+Filename: pool/main/pve-fake-subscription_0.0.12-1_all.deb
+Size: 4512
+MD5sum: 8c8a9aa0ddcc4275cac381e599fe3dde
+SHA1: db0f06047aff7c923438e31c1209ce903bcb5b10
+SHA256: 58524d837d377e70f75a536e48c14249a6d9abc87a334c3930090f957c15f8de
+SHA512: 34ff8163e6375fc0d17a6bacc4d98eff749c9a61eb5cee9a70c6f56d71f3d31ef720782ab3c7c0553e242f3c76b4a4743b513d63d085a810183e2417faa70f15
+Homepage: https://github.com/Jamesits/pve-fake-subscription
+Description: Pollute the subscription cache of Proxmox VE (>=5.0), Proxmox Mail Gateway (>=5.0) & Proxmox Backup Server (>=1.0) so it won't alert you on dashboard login
+License: GLWTS(Good Luck With That Shit) Public License
+
