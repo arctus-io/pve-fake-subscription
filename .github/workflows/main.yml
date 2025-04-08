@@ -85,7 +85,7 @@ jobs:
         run: |
           mkdir -p gh-pages/apt-repo/dists/{bookworm,trixie}/main/binary-all
           mkdir -p gh-pages/apt-repo/pool/main
-          mv out/*.deb gh-pages/apt-repo/pool/
+          mv out/*.deb gh-pages/apt-repo/pool/main/
           cd gh-pages/apt-repo/dists
           [ -L stable ] || ln -s bookworm stable
           [ -L testing ] || ln -s trixie testing
