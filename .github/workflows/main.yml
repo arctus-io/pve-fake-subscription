@@ -91,7 +91,7 @@ jobs:
           apt-ftparchive packages --arch all pool/ > dists/bookworm/main/binary-all/Packages
           [ ! -f dists/bookworm/Release ] || rm -f dists/bookworm/Release
           apt-ftparchive release dists/bookworm/ \
-          -o APT::FTPArchive::Release::Origin="pre-fake-subscription Github" \
+          -o APT::FTPArchive::Release::Origin="Proxmox" \
           -o APT::FTPArchive::Release::Label="pve-fake-subscription" \
           -o APT::FTPArchive::Release::Suite="bookworm" \
           -o APT::FTPArchive::Release::Version="1.0"  \
