@@ -106,6 +106,9 @@ jobs:
             > Release
             mv Release dists/${codename}/Release
           done
+
+          yes | cpan App::htidx
+          htidx
           
       - name: Publish gh-pages
         run: |
